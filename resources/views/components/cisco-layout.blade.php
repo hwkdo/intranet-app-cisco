@@ -10,6 +10,10 @@
         ['label' => 'Beispielseite', 'href' => route('apps.cisco.example'), 'icon' => 'document-text', 'description' => 'Beispielseite anzeigen', 'buttonText' => 'Beispielseite öffnen'],
         ['label' => 'Meine Einstellungen', 'href' => route('apps.cisco.settings.user'), 'icon' => 'cog-6-tooth', 'description' => 'Persönliche Einstellungen anpassen', 'buttonText' => 'Einstellungen öffnen'],
         ['label' => 'App-Info', 'href' => route('apps.cisco.info'), 'icon' => 'information-circle', 'description' => 'Installierte Version und Release-Historie', 'buttonText' => 'App-Info anzeigen'],
+        ['label' => 'Geräte', 'href' => route('apps.cisco.devices.index'), 'icon' => 'device-phone-mobile', 'description' => 'CUCM-Geräte verwalten', 'buttonText' => 'Geräte öffnen', 'permission' => 'manage-app-cisco'],
+        ['label' => 'Lines', 'href' => route('apps.cisco.lines.index'), 'icon' => 'hashtag', 'description' => 'Telefonnummern (Lines) verwalten', 'buttonText' => 'Lines öffnen', 'permission' => 'manage-app-cisco'],
+        ['label' => 'User', 'href' => route('apps.cisco.users.index'), 'icon' => 'user', 'description' => 'CUCM-End-User verwalten', 'buttonText' => 'User öffnen', 'permission' => 'manage-app-cisco'],
+        ['label' => 'Pickup Groups', 'href' => route('apps.cisco.pickup-groups.index'), 'icon' => 'phone', 'description' => 'Pickup Groups verwalten', 'buttonText' => 'Pickup Groups öffnen', 'permission' => 'manage-app-cisco'],
         ['label' => 'Admin', 'href' => route('apps.cisco.admin.index'), 'icon' => 'shield-check', 'description' => 'Administrationsbereich verwalten', 'buttonText' => 'Admin öffnen', 'permission' => 'manage-app-cisco']
     ];
     

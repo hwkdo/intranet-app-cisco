@@ -1,0 +1,99 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Models\User;
+use Hwkdo\CiscoPhoneServicesLaravel\Interfaces\AxlServiceInterface;
+use Livewire\Livewire;
+use Spatie\Permission\Models\Permission;
+
+use function Pest\Laravel\mock;
+
+beforeEach(function () {
+    Permission::findOrCreate('manage-app-cisco', 'web');
+});
+
+test('lines page lists directory numbers', function () {
+    $user = User::factory()->create();
+    $user->givePermissionTo('manage-app-cisco');
+
+    mock(AxlServiceInterface::class)
+        ->shouldReceive('listLines')
+        ->once()
+        ->andReturn([
+            [
+                'pattern' => '\+492315493518',
+                'description' => 'Test Line',
+                'alerting_name' => 'Max Mustermann',
+                'uuid' => '11111111-1111-1111-1111-111111111111',
+                'usage' => 'Device',
+                'route_partition' => 'PHONES',
+            ],
+        ]);
+
+    Livewire::actingAs($user)
+        ->test('intranet-app-cisco::apps.cisco.lines.index')
+        ->assertSee('Lines (Telefonnummern)')
+        ->assertSee('\+492315493518')
+        ->assertSee('Test Line')
+        ->assertSee('Max Mustermann');
+});
+
+test('lines page filters locally by description and alerting name', function () {
+    $user = User::factory()->create();
+    $user->givePermissionTo('manage-app-cisco');
+
+    mock(AxlServiceInterface::class)
+        ->shouldReceive('listLines')
+        ->once()
+        ->andReturn([
+            [
+                'pattern' => '\+492315493518',
+                'description' => 'Feuerwehreinfahrt',
+                'alerting_name' => '',
+                'uuid' => '11111111-1111-1111-1111-111111111111',
+                'usage' => 'Device',
+                'route_partition' => 'PHONES',
+            ],
+            [
+                'pattern' => '\+492315493999',
+                'description' => 'Andere Line',
+                'alerting_name' => 'Büro',
+                'uuid' => '22222222-2222-2222-2222-222222222222',
+                'usage' => 'Device',
+                'route_partition' => 'PHONES',
+            ],
+        ]);
+
+    Livewire::actingAs($user)
+        ->test('intranet-app-cisco::apps.cisco.lines.index')
+        ->set('search', 'feuerwehr')
+        ->assertSee('Feuerwehreinfahrt')
+        ->assertDontSee('Andere Line');
+});
+
+test('lines page can create line', function () {
+    $user = User::factory()->create();
+    $user->givePermissionTo('manage-app-cisco');
+
+    $axlMock = mock(AxlServiceInterface::class);
+    $axlMock->shouldReceive('listLines')->andReturn([]);
+    $axlMock->shouldReceive('addLine')
+        ->once()
+        ->with([
+            'pattern' => '\+492315493518',
+            'description' => 'Test Line',
+            'alertingName' => 'Max Mustermann',
+            'usage' => 'Device',
+        ])
+        ->andReturn((object) []);
+
+    Livewire::actingAs($user)
+        ->test('intranet-app-cisco::apps.cisco.lines.index')
+        ->set('showForm', true)
+        ->set('formPattern', '\+492315493518')
+        ->set('formDescription', 'Test Line')
+        ->set('formAlertingName', 'Max Mustermann')
+        ->call('save')
+        ->assertSet('showForm', false);
+});

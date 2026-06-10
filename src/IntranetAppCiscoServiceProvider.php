@@ -2,10 +2,11 @@
 
 namespace Hwkdo\IntranetAppCisco;
 
+use Hwkdo\IntranetAppCisco\Commands\IntranetAppCiscoCommand;
+use Livewire\Livewire;
+use Livewire\Volt\Volt;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Hwkdo\IntranetAppCisco\Commands\IntranetAppCiscoCommand;
-use Livewire\Volt\Volt;
 
 class IntranetAppCiscoServiceProvider extends PackageServiceProvider
 {
@@ -27,8 +28,9 @@ class IntranetAppCiscoServiceProvider extends PackageServiceProvider
     {
         parent::boot();
         // Gate::policy(Raum::class, RaumPolicy::class);
-        $this->app->booted( function() {
-            Volt::mount(__DIR__.'/../resources/views/livewire');                        
+        $this->app->booted(function () {
+            Volt::mount(__DIR__.'/../resources/views/livewire');
+            Livewire::addNamespace('intranet-app-cisco', __DIR__.'/../resources/views/livewire');
         });
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
