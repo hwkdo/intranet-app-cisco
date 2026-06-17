@@ -69,10 +69,21 @@ new #[Title('Cisco – Geräte')] class extends Component
         $search = strtolower($this->search);
 
         return array_values(array_filter($this->devices, function (array $device) use ($search): bool {
-            return str_contains(strtolower($device['name'] ?? ''), $search)
+            if (str_contains(strtolower($device['name'] ?? ''), $search)
                 || str_contains(strtolower($device['description'] ?? ''), $search)
                 || str_contains(strtolower($device['product'] ?? ''), $search)
-                || str_contains(strtolower($device['protocol'] ?? ''), $search);
+                || str_contains(strtolower($device['protocol'] ?? ''), $search)) {
+                return true;
+            }
+
+            foreach ($device['lines'] ?? [] as $line) {
+                if (str_contains(strtolower($line['pattern'] ?? ''), $search)
+                    || str_contains(strtolower($line['route_partition'] ?? ''), $search)) {
+                    return true;
+                }
+            }
+
+            return false;
         }));
     }
 
@@ -186,7 +197,7 @@ new #[Title('Cisco – Geräte')] class extends Component
             </div>
         </div>
 
-        <flux:input wire:model.live.debounce.300ms="search" placeholder="Nach Name, Beschreibung, Produkt oder Protokoll suchen..." icon="magnifying-glass" />
+        <flux:input wire:model.live.debounce.300ms="search" placeholder="Nach Name, Beschreibung, Line, Produkt oder Protokoll suchen..." icon="magnifying-glass" />
 
         @if($loading)
             <flux:text>Lädt Geräte...</flux:text>
@@ -198,6 +209,7 @@ new #[Title('Cisco – Geräte')] class extends Component
             <flux:table>
                 <flux:table.columns>
                     <flux:table.column>Name</flux:table.column>
+                    <flux:table.column>Line(s)</flux:table.column>
                     <flux:table.column>Beschreibung</flux:table.column>
                     <flux:table.column>Produkt</flux:table.column>
                     <flux:table.column>Protokoll</flux:table.column>
@@ -207,6 +219,22 @@ new #[Title('Cisco – Geräte')] class extends Component
                     @foreach($this->filteredDevices as $device)
                         <flux:table.row wire:key="device-{{ $device['name'] }}">
                             <flux:table.cell>{{ $device['name'] }}</flux:table.cell>
+                            <flux:table.cell>
+                                @if(empty($device['lines']))
+                                    —
+                                @else
+                                    <div class="space-y-1">
+                                        @foreach($device['lines'] as $line)
+                                            <div>
+                                                {{ $line['pattern'] }}
+                                                @if($line['route_partition'])
+                                                    <span class="text-zinc-500 dark:text-zinc-400">({{ $line['route_partition'] }})</span>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </flux:table.cell>
                             <flux:table.cell>{{ $device['description'] }}</flux:table.cell>
                             <flux:table.cell>{{ $device['product'] }}</flux:table.cell>
                             <flux:table.cell>{{ $device['protocol'] }}</flux:table.cell>

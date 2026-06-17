@@ -14,6 +14,9 @@
         ['label' => 'Lines', 'href' => route('apps.cisco.lines.index'), 'icon' => 'hashtag', 'description' => 'Telefonnummern (Lines) verwalten', 'buttonText' => 'Lines öffnen', 'permission' => 'manage-app-cisco'],
         ['label' => 'User', 'href' => route('apps.cisco.users.index'), 'icon' => 'user', 'description' => 'CUCM-End-User verwalten', 'buttonText' => 'User öffnen', 'permission' => 'manage-app-cisco'],
         ['label' => 'Pickup Groups', 'href' => route('apps.cisco.pickup-groups.index'), 'icon' => 'phone', 'description' => 'Pickup Groups verwalten', 'buttonText' => 'Pickup Groups öffnen', 'permission' => 'manage-app-cisco'],
+        ['label' => 'Hunt Pilots', 'href' => route('apps.cisco.hunt-pilots.index'), 'icon' => 'phone-arrow-down-left', 'description' => 'Sammelrufnummern (Hunt Pilots) verwalten', 'buttonText' => 'Hunt Pilots öffnen', 'permission' => 'manage-app-cisco'],
+        ['label' => 'Hunt Lists', 'href' => route('apps.cisco.hunt-lists.index'), 'icon' => 'queue-list', 'description' => 'Sammellisten (Hunt Lists) verwalten', 'buttonText' => 'Hunt Lists öffnen', 'permission' => 'manage-app-cisco'],
+        ['label' => 'Line Groups', 'href' => route('apps.cisco.line-groups.index'), 'icon' => 'user-group', 'description' => 'Leitungsgruppen (Line Groups) verwalten', 'buttonText' => 'Line Groups öffnen', 'permission' => 'manage-app-cisco'],
         ['label' => 'Admin', 'href' => route('apps.cisco.admin.index'), 'icon' => 'shield-check', 'description' => 'Administrationsbereich verwalten', 'buttonText' => 'Admin öffnen', 'permission' => 'manage-app-cisco']
     ];
     

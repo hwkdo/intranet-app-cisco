@@ -41,6 +41,13 @@ test('devices page lists phones', function () {
                 'product' => 'CSF',
                 'protocol' => 'SIP',
                 'device_pool' => 'Default',
+                'lines' => [
+                    [
+                        'index' => 1,
+                        'pattern' => '+492315493518',
+                        'route_partition' => 'PHONES',
+                    ],
+                ],
             ],
         ]);
 
@@ -48,7 +55,9 @@ test('devices page lists phones', function () {
         ->test('intranet-app-cisco::apps.cisco.devices.index')
         ->assertSee('Geräte (Phones)')
         ->assertSee('CSFdemo')
-        ->assertSee('Demo Phone');
+        ->assertSee('Demo Phone')
+        ->assertSee('+492315493518')
+        ->assertSee('PHONES');
 });
 
 test('devices page filters locally by description and product', function () {
@@ -66,6 +75,7 @@ test('devices page filters locally by description and product', function () {
                 'product' => 'Cisco Unified Client Services Framework',
                 'protocol' => 'SIP',
                 'device_pool' => 'Default',
+                'lines' => [],
             ],
             [
                 'name' => 'CSFdemo',
@@ -74,12 +84,54 @@ test('devices page filters locally by description and product', function () {
                 'product' => 'CSF',
                 'protocol' => 'SIP',
                 'device_pool' => 'Default',
+                'lines' => [],
             ],
         ]);
 
     Livewire::actingAs($user)
         ->test('intranet-app-cisco::apps.cisco.devices.index')
         ->set('search', 'feuerwehr')
+        ->assertSee('CSFmax.mustermann')
+        ->assertDontSee('CSFdemo');
+});
+
+test('devices page filters locally by assigned line pattern', function () {
+    $user = User::factory()->create();
+    $user->givePermissionTo('manage-app-cisco');
+
+    mock(AxlServiceInterface::class)
+        ->shouldReceive('listPhones')
+        ->once()
+        ->andReturn([
+            [
+                'name' => 'CSFmax.mustermann',
+                'description' => 'Büro',
+                'uuid' => '11111111-1111-1111-1111-111111111111',
+                'product' => 'CSF',
+                'protocol' => 'SIP',
+                'device_pool' => 'Default',
+                'lines' => [
+                    [
+                        'index' => 1,
+                        'pattern' => '+492315493518',
+                        'route_partition' => 'PHONES',
+                    ],
+                ],
+            ],
+            [
+                'name' => 'CSFdemo',
+                'description' => 'Andere',
+                'uuid' => '22222222-2222-2222-2222-222222222222',
+                'product' => 'CSF',
+                'protocol' => 'SIP',
+                'device_pool' => 'Default',
+                'lines' => [],
+            ],
+        ]);
+
+    Livewire::actingAs($user)
+        ->test('intranet-app-cisco::apps.cisco.devices.index')
+        ->set('search', '493518')
         ->assertSee('CSFmax.mustermann')
         ->assertDontSee('CSFdemo');
 });

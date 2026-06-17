@@ -4,6 +4,7 @@ use Flux\Flux;
 use Hwkdo\CiscoPhoneServicesLaravel\Interfaces\AxlServiceInterface;
 use Hwkdo\CiscoPhoneServicesLaravel\Support\AxlExceptionMessage;
 use Hwkdo\CiscoPhoneServicesLaravel\Support\AxlValueFormatter;
+use Hwkdo\CiscoPhoneServicesLaravel\Support\LineCallingPermissionFormatter;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -17,6 +18,9 @@ new #[Title('Cisco – Lines')] class extends Component
     /** @var array<int, array<string, mixed>> */
     public array $lines = [];
 
+    /** @var array<int, array{name: string, description: string, label: string}> */
+    public array $callingSearchSpaces = [];
+
     public bool $showForm = false;
 
     public bool $isEditing = false;
@@ -29,10 +33,13 @@ new #[Title('Cisco – Lines')] class extends Component
 
     public string $formAlertingName = '';
 
+    public string $formCallingSearchSpace = '';
+
     public function mount(): void
     {
         $this->formUsage = (string) config('cisco-phone-services-laravel.axl.defaults.line.usage', 'Device');
         $this->loadLines();
+        $this->loadCallingSearchSpaces();
     }
 
     public function loadLines(): void
@@ -52,6 +59,15 @@ new #[Title('Cisco – Lines')] class extends Component
         $this->loading = false;
     }
 
+    public function loadCallingSearchSpaces(): void
+    {
+        try {
+            $this->callingSearchSpaces = app(AxlServiceInterface::class)->listCallingSearchSpaces();
+        } catch (\Throwable) {
+            $this->callingSearchSpaces = [];
+        }
+    }
+
     #[Computed]
     public function filteredLines(): array
     {
@@ -64,7 +80,9 @@ new #[Title('Cisco – Lines')] class extends Component
         return array_values(array_filter($this->lines, function (array $line) use ($search): bool {
             return str_contains(strtolower($line['pattern'] ?? ''), $search)
                 || str_contains(strtolower($line['description'] ?? ''), $search)
-                || str_contains(strtolower($line['alerting_name'] ?? ''), $search);
+                || str_contains(strtolower($line['alerting_name'] ?? ''), $search)
+                || str_contains(strtolower($line['calling_permission'] ?? ''), $search)
+                || str_contains(strtolower($line['calling_search_space'] ?? ''), $search);
         }));
     }
 
@@ -84,6 +102,7 @@ new #[Title('Cisco – Lines')] class extends Component
             $this->formDescription = AxlValueFormatter::stringify($line->description ?? '');
             $this->formUsage = AxlValueFormatter::stringify($line->usage ?? $this->formUsage);
             $this->formAlertingName = AxlValueFormatter::stringify($line->alertingName ?? '');
+            $this->formCallingSearchSpace = AxlValueFormatter::stringify($line->shareLineAppearanceCssName ?? '');
             $this->isEditing = true;
             $this->showForm = true;
         } catch (\Throwable $throwable) {
@@ -101,6 +120,7 @@ new #[Title('Cisco – Lines')] class extends Component
             'formDescription' => ['nullable', 'string', 'max:128'],
             'formUsage' => ['required', 'string', 'max:64'],
             'formAlertingName' => ['nullable', 'string', 'max:50'],
+            'formCallingSearchSpace' => ['nullable', 'string', 'max:50'],
         ]);
 
         try {
@@ -110,6 +130,7 @@ new #[Title('Cisco – Lines')] class extends Component
                 $axlService->updateLineByPattern($this->formPattern, array_filter([
                     'description' => $this->formDescription,
                     'alertingName' => $this->formAlertingName,
+                    'shareLineAppearanceCssName' => $this->formCallingSearchSpace,
                 ], fn ($value) => $value !== ''));
                 Flux::toast(text: 'Line aktualisiert', variant: 'success');
             } else {
@@ -118,6 +139,7 @@ new #[Title('Cisco – Lines')] class extends Component
                     'description' => $this->formDescription,
                     'alertingName' => $this->formAlertingName,
                     'usage' => $this->formUsage,
+                    'shareLineAppearanceCssName' => $this->formCallingSearchSpace,
                 ], fn ($value) => $value !== ''));
                 Flux::toast(text: 'Line angelegt', variant: 'success');
             }
@@ -152,6 +174,7 @@ new #[Title('Cisco – Lines')] class extends Component
         $this->formDescription = '';
         $this->formUsage = (string) config('cisco-phone-services-laravel.axl.defaults.line.usage', 'Device');
         $this->formAlertingName = '';
+        $this->formCallingSearchSpace = '';
     }
 };
 ?>
@@ -166,7 +189,7 @@ new #[Title('Cisco – Lines')] class extends Component
             </div>
         </div>
 
-        <flux:input wire:model.live.debounce.300ms="search" placeholder="Nach Nummer, Beschreibung oder Alerting Name suchen..." icon="magnifying-glass" />
+        <flux:input wire:model.live.debounce.300ms="search" placeholder="Nach Nummer, Beschreibung, Alerting Name oder Telefonie-Berechtigung suchen..." icon="magnifying-glass" />
 
         @if($loading)
             <flux:text>Lädt Lines...</flux:text>
@@ -181,6 +204,7 @@ new #[Title('Cisco – Lines')] class extends Component
                     <flux:table.column>Beschreibung</flux:table.column>
                     <flux:table.column>Alerting Name</flux:table.column>
                     <flux:table.column>Usage</flux:table.column>
+                    <flux:table.column>Telefonie</flux:table.column>
                     <flux:table.column>Partition</flux:table.column>
                     <flux:table.column>Aktionen</flux:table.column>
                 </flux:table.columns>
@@ -191,6 +215,12 @@ new #[Title('Cisco – Lines')] class extends Component
                             <flux:table.cell>{{ $line['description'] }}</flux:table.cell>
                             <flux:table.cell>{{ $line['alerting_name'] }}</flux:table.cell>
                             <flux:table.cell>{{ $line['usage'] }}</flux:table.cell>
+                            <flux:table.cell>
+                                <div>{{ $line['calling_permission'] }}</div>
+                                @if(($line['calling_search_space'] ?? '') !== '' && ($line['calling_search_space'] ?? '') !== ($line['calling_permission'] ?? ''))
+                                    <flux:text class="text-zinc-500 dark:text-zinc-400">{{ $line['calling_search_space'] }}</flux:text>
+                                @endif
+                            </flux:table.cell>
                             <flux:table.cell>{{ $line['route_partition'] }}</flux:table.cell>
                             <flux:table.cell>
                                 <div class="flex gap-2">
@@ -219,6 +249,23 @@ new #[Title('Cisco – Lines')] class extends Component
             <flux:input wire:model="formPattern" label="Pattern (Telefonnummer)" placeholder="z.B. \+492315493518" :disabled="$isEditing" required />
             <flux:input wire:model="formDescription" label="Beschreibung" />
             <flux:input wire:model="formAlertingName" label="Alerting Name" maxlength="50" />
+            @if(count($callingSearchSpaces) > 0)
+                <flux:select wire:model="formCallingSearchSpace" label="Telefonie-Berechtigung (Calling Search Space)">
+                    <flux:select.option value="">{{ $isEditing ? 'Unverändert lassen' : 'Keine' }}</flux:select.option>
+                    @if($isEditing && $formCallingSearchSpace !== '' && ! collect($callingSearchSpaces)->contains(fn (array $css): bool => $css['name'] === $formCallingSearchSpace))
+                        <flux:select.option value="{{ $formCallingSearchSpace }}">
+                            {{ LineCallingPermissionFormatter::label($formCallingSearchSpace) }} ({{ $formCallingSearchSpace }})
+                        </flux:select.option>
+                    @endif
+                    @foreach($callingSearchSpaces as $css)
+                        <flux:select.option value="{{ $css['name'] }}">
+                            {{ $css['label'] }}{{ $css['label'] !== $css['name'] ? ' ('.$css['name'].')' : '' }}
+                        </flux:select.option>
+                    @endforeach
+                </flux:select>
+            @else
+                <flux:input wire:model="formCallingSearchSpace" label="Telefonie-Berechtigung (Calling Search Space)" placeholder="z.B. CSS_National" />
+            @endif
             <flux:input wire:model="formUsage" label="Usage" :disabled="$isEditing" required />
 
             <div class="flex justify-end gap-2">
