@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Gvp;
 use App\Models\User;
 use Hwkdo\CiscoPhoneServicesLaravel\Interfaces\AxlServiceInterface;
 use Livewire\Livewire;
@@ -25,6 +26,19 @@ test('lines page lists directory numbers', function () {
     $user = User::factory()->create();
     $user->givePermissionTo('manage-app-cisco');
 
+    $gvp = Gvp::factory()->create([
+        'kuerzel' => 'GB',
+        'nummer' => '7',
+        'name' => 'Support',
+    ]);
+
+    User::factory()->create([
+        'vorname' => 'Max',
+        'nachname' => 'Mustermann',
+        'active' => true,
+        'gvp_id' => $gvp->id,
+    ]);
+
     $axlMock = mock(AxlServiceInterface::class);
     mockLinePageDependencies($axlMock);
     $axlMock->shouldReceive('listLines')
@@ -32,7 +46,7 @@ test('lines page lists directory numbers', function () {
         ->andReturn([
             [
                 'pattern' => '\+492315493518',
-                'description' => 'Test Line',
+                'description' => 'Max Mustermann',
                 'alerting_name' => 'Max Mustermann',
                 'uuid' => '11111111-1111-1111-1111-111111111111',
                 'usage' => 'Device',
@@ -46,8 +60,8 @@ test('lines page lists directory numbers', function () {
         ->test('intranet-app-cisco::apps.cisco.lines.index')
         ->assertSee('Lines (Telefonnummern)')
         ->assertSee('\+492315493518')
-        ->assertSee('Test Line')
         ->assertSee('Max Mustermann')
+        ->assertSee('GB 7 Support')
         ->assertSee('National');
 });
 

@@ -12,6 +12,7 @@
         ['label' => 'App-Info', 'href' => route('apps.cisco.info'), 'icon' => 'information-circle', 'description' => 'Installierte Version und Release-Historie', 'buttonText' => 'App-Info anzeigen'],
         ['label' => 'Geräte', 'href' => route('apps.cisco.devices.index'), 'icon' => 'device-phone-mobile', 'description' => 'CUCM-Geräte verwalten', 'buttonText' => 'Geräte öffnen', 'permission' => 'manage-app-cisco'],
         ['label' => 'Lines', 'href' => route('apps.cisco.lines.index'), 'icon' => 'hashtag', 'description' => 'Telefonnummern (Lines) verwalten', 'buttonText' => 'Lines öffnen', 'permission' => 'manage-app-cisco'],
+        ['label' => 'Nummernliste', 'href' => route('apps.cisco.number-list.index'), 'icon' => 'list-bullet', 'description' => 'Übersicht aller Durchwahlen 100–999', 'buttonText' => 'Nummernliste öffnen', 'permission' => 'manage-app-cisco'],
         ['label' => 'User', 'href' => route('apps.cisco.users.index'), 'icon' => 'user', 'description' => 'CUCM-End-User verwalten', 'buttonText' => 'User öffnen', 'permission' => 'manage-app-cisco'],
         ['label' => 'Pickup Groups', 'href' => route('apps.cisco.pickup-groups.index'), 'icon' => 'phone', 'description' => 'Pickup Groups verwalten', 'buttonText' => 'Pickup Groups öffnen', 'permission' => 'manage-app-cisco'],
         ['label' => 'Hunt Pilots', 'href' => route('apps.cisco.hunt-pilots.index'), 'icon' => 'phone-arrow-down-left', 'description' => 'Sammelrufnummern (Hunt Pilots) verwalten', 'buttonText' => 'Hunt Pilots öffnen', 'permission' => 'manage-app-cisco'],

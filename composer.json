@@ -24,6 +24,7 @@
         "hwkdo/cisco-phone-services-laravel": "dev-main || ^0",
         "hwkdo/intranet-app-base": "dev-main || ^1.0",
         "spatie/laravel-permission": "^6.16",
+        "maatwebsite/excel": "^3.1",
         "livewire/volt": "^1.6.7"
     },
     "require-dev": {

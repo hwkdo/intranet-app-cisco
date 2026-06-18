@@ -19,6 +19,7 @@ Route::middleware(['web','auth','can:manage-app-cisco'])->group(function () {
 
     Route::livewire('apps/cisco/devices', 'intranet-app-cisco::apps.cisco.devices.index')->name('apps.cisco.devices.index');
     Route::livewire('apps/cisco/lines', 'intranet-app-cisco::apps.cisco.lines.index')->name('apps.cisco.lines.index');
+    Route::livewire('apps/cisco/number-list', 'intranet-app-cisco::apps.cisco.number-list.index')->name('apps.cisco.number-list.index');
     Route::livewire('apps/cisco/users', 'intranet-app-cisco::apps.cisco.users.index')->name('apps.cisco.users.index');
     Route::livewire('apps/cisco/hunt-pilots', 'intranet-app-cisco::apps.cisco.hunt-pilots.index')->name('apps.cisco.hunt-pilots.index');
     Route::livewire('apps/cisco/hunt-lists', 'intranet-app-cisco::apps.cisco.hunt-lists.index')->name('apps.cisco.hunt-lists.index');
