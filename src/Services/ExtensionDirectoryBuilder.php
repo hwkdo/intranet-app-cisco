@@ -22,6 +22,7 @@ class ExtensionDirectoryBuilder
      *     is_free: bool,
      *     remark: string,
      *     remark_lines: list<string>,
+     *     group: string|null,
      *     department: string|null
      * }>
      */
@@ -29,11 +30,13 @@ class ExtensionDirectoryBuilder
     {
         /** @var array<int, list<string>> $assignments */
         $assignments = [];
+        /** @var array<int, string|null> $groups */
+        $groups = [];
         /** @var array<int, string|null> $departments */
         $departments = [];
 
         $this->addReservations($assignments);
-        $this->addLines($assignments, $departments);
+        $this->addLines($assignments, $groups, $departments);
         $this->addPickupGroups($assignments);
         $this->addHuntPilots($assignments);
 
@@ -49,6 +52,7 @@ class ExtensionDirectoryBuilder
                     'is_free' => false,
                     'remark' => implode(' · ', $remarkLines),
                     'remark_lines' => $remarkLines,
+                    'group' => $groups[$extension] ?? null,
                     'department' => $departments[$extension] ?? null,
                 ];
 
@@ -61,6 +65,7 @@ class ExtensionDirectoryBuilder
                 'is_free' => true,
                 'remark' => 'FREI',
                 'remark_lines' => [],
+                'group' => null,
                 'department' => null,
             ];
         }
@@ -82,9 +87,10 @@ class ExtensionDirectoryBuilder
 
     /**
      * @param  array<int, list<string>>  $assignments
+     * @param  array<int, string|null>  $groups
      * @param  array<int, string|null>  $departments
      */
-    private function addLines(array &$assignments, array &$departments): void
+    private function addLines(array &$assignments, array &$groups, array &$departments): void
     {
         foreach ($this->axlService->listLines() as $line) {
             $extension = ExtensionNormalizer::toExtension($line['pattern'] ?? '');
@@ -100,7 +106,15 @@ class ExtensionDirectoryBuilder
 
             $resolved = $this->lineEmployeeResolver->resolveForLine($line);
 
-            if ($resolved !== null && ($resolved->department !== '')) {
+            if ($resolved === null) {
+                continue;
+            }
+
+            if ($resolved->group !== '') {
+                $groups[$extension] = $resolved->group;
+            }
+
+            if ($resolved->department !== '') {
                 $departments[$extension] = $resolved->department;
             }
         }

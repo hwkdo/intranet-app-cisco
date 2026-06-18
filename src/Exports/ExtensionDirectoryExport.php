@@ -32,6 +32,7 @@ class ExtensionDirectoryExport implements FromCollection, ShouldAutoSize, WithHe
         return [
             'Durchwahl',
             'Bemerkung',
+            'Gruppe',
             'Abteilung',
         ];
     }
@@ -53,6 +54,7 @@ class ExtensionDirectoryExport implements FromCollection, ShouldAutoSize, WithHe
         return [
             $entry['extension_display'],
             $remark,
+            $entry['group'] ?? '',
             $entry['department'] ?? '',
         ];
     }

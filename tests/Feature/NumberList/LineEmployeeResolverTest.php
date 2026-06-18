@@ -7,6 +7,39 @@ use App\Models\User;
 use Hwkdo\IntranetAppCisco\Services\ExtensionDirectoryBuilder;
 use Hwkdo\IntranetAppCisco\Services\LineEmployeeResolver;
 
+test('line employee resolver assigns group and parent department for gruppe users', function () {
+    $abteilung = Gvp::factory()->create([
+        'kuerzel' => 'A',
+        'nummer' => '1',
+        'name' => 'Zentrale Dienste',
+    ]);
+
+    $gruppe = Gvp::factory()->create([
+        'kuerzel' => 'G',
+        'nummer' => '2',
+        'name' => 'Empfang',
+        'parent_id' => $abteilung->id,
+    ]);
+
+    User::factory()->create([
+        'vorname' => 'Anna',
+        'nachname' => 'Test',
+        'active' => true,
+        'gvp_id' => $gruppe->id,
+        'telefon' => '+49 231 5493-518',
+    ]);
+
+    $resolved = app(LineEmployeeResolver::class)->resolveForLine([
+        'pattern' => '\+492315493518',
+        'description' => 'Anna Test +492315493518 doard DE',
+        'alerting_name' => 'Anna Test 518',
+    ]);
+
+    expect($resolved)->not->toBeNull()
+        ->and($resolved->group)->toBe('G 2 Empfang')
+        ->and($resolved->department)->toBe('A 1 Zentrale Dienste');
+});
+
 test('line employee resolver matches user primarily by phone extension', function () {
     $gvp = Gvp::factory()->create([
         'kuerzel' => 'GB',
@@ -29,6 +62,7 @@ test('line employee resolver matches user primarily by phone extension', functio
     ]);
 
     expect($resolved)->not->toBeNull()
+        ->and($resolved->group)->toBe('')
         ->and($resolved->department)->toBe('GB 12 Verwaltung');
 });
 

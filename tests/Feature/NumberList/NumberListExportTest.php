@@ -52,7 +52,7 @@ test('number list can export entire directory to excel', function () {
 
     Excel::assertDownloaded('nummernliste-alle-*.xlsx', function (ExtensionDirectoryExport $export): bool {
         return $export->collection()->count() === 900
-            && $export->headings() === ['Durchwahl', 'Bemerkung', 'Abteilung'];
+            && $export->headings() === ['Durchwahl', 'Bemerkung', 'Gruppe', 'Abteilung'];
     });
 });
 

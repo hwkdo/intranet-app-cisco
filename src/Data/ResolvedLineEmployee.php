@@ -8,6 +8,7 @@ readonly class ResolvedLineEmployee
 {
     public function __construct(
         public object $user,
+        public string $group,
         public string $department,
     ) {}
 }

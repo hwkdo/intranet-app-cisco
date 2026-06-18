@@ -8,11 +8,16 @@ use Hwkdo\IntranetAppCisco\Data\ResolvedLineEmployee;
 use Hwkdo\IntranetAppCisco\Support\CiscoModels;
 use Hwkdo\IntranetAppCisco\Support\EmployeeNameParser;
 use Hwkdo\IntranetAppCisco\Support\ExtensionNormalizer;
+use Hwkdo\IntranetAppCisco\Support\GvpOrganizationalLabelResolver;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class LineEmployeeResolver
 {
+    public function __construct(
+        private readonly GvpOrganizationalLabelResolver $organizationalLabelResolver,
+    ) {}
+
     /** @var array<string, list<object>>|null */
     private ?array $userIndex = null;
 
@@ -55,7 +60,9 @@ class LineEmployeeResolver
     public function enrichLines(array $lines): array
     {
         return array_map(function (array $line): array {
-            $line['department'] = $this->resolveForLine($line)?->department;
+            $resolved = $this->resolveForLine($line);
+            $line['group'] = $resolved?->group;
+            $line['department'] = $resolved?->department;
 
             return $line;
         }, $lines);
@@ -169,7 +176,7 @@ class LineEmployeeResolver
         $this->userIndex = [];
         $this->extensionIndex = [];
 
-        foreach ($query->with('gvp')->get(['id', 'vorname', 'nachname', 'telefon', 'gvp_id']) as $user) {
+        foreach ($query->with(['gvp.parent'])->get(['id', 'vorname', 'nachname', 'telefon', 'gvp_id']) as $user) {
             $vorname = trim((string) ($user->vorname ?? ''));
             $nachname = trim((string) ($user->nachname ?? ''));
 
@@ -193,29 +200,13 @@ class LineEmployeeResolver
 
     private function toResolvedEmployee(object $user): ResolvedLineEmployee
     {
-        $department = $this->formatDepartment($user->gvp ?? null);
+        $labels = $this->organizationalLabelResolver->resolve($user->gvp ?? null);
 
         return new ResolvedLineEmployee(
             user: $user,
-            department: $department ?? '',
+            group: $labels['group'] ?? '',
+            department: $labels['department'] ?? '',
         );
-    }
-
-    private function formatDepartment(?object $gvp): ?string
-    {
-        if ($gvp === null) {
-            return null;
-        }
-
-        $bezeichnung = trim((string) ($gvp->bezeichnung ?? ''));
-
-        if ($bezeichnung !== '') {
-            return $bezeichnung;
-        }
-
-        $name = trim((string) ($gvp->name ?? ''));
-
-        return $name !== '' ? $name : null;
     }
 
     private function extensionForUser(object $user): ?int

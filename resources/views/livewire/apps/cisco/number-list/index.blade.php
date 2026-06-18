@@ -18,7 +18,7 @@ new #[Title('Cisco – Nummernliste')] class extends Component
 
     public string $search = '';
 
-    /** @var array<int, array{extension: int, extension_display: string, is_free: bool, remark: string, remark_lines: list<string>, department: string|null}> */
+    /** @var array<int, array{extension: int, extension_display: string, is_free: bool, remark: string, remark_lines: list<string>, group: string|null, department: string|null}> */
     public array $entries = [];
 
     public function mount(): void
@@ -61,6 +61,7 @@ new #[Title('Cisco – Nummernliste')] class extends Component
         return array_values(array_filter($entries, function (array $entry) use ($search): bool {
             return str_contains(strtolower($entry['extension_display']), $search)
                 || str_contains(strtolower($entry['remark']), $search)
+                || str_contains(strtolower((string) ($entry['group'] ?? '')), $search)
                 || str_contains(strtolower((string) ($entry['department'] ?? '')), $search);
         }));
     }
@@ -135,7 +136,7 @@ new #[Title('Cisco – Nummernliste')] class extends Component
 
         <flux:input
             wire:model.live.debounce.300ms="search"
-            placeholder="Nach Durchwahl, Bemerkung oder Abteilung suchen..."
+            placeholder="Nach Durchwahl, Bemerkung, Gruppe oder Abteilung suchen..."
             icon="magnifying-glass"
         />
 
@@ -157,6 +158,7 @@ new #[Title('Cisco – Nummernliste')] class extends Component
                     <flux:table.columns>
                         <flux:table.column class="w-24 shrink-0">Durchwahl</flux:table.column>
                         <flux:table.column class="min-w-0">Bemerkung</flux:table.column>
+                        <flux:table.column class="w-56 shrink-0">Gruppe</flux:table.column>
                         <flux:table.column class="w-56 shrink-0">Abteilung</flux:table.column>
                     </flux:table.columns>
                     <flux:table.rows>
@@ -174,6 +176,7 @@ new #[Title('Cisco – Nummernliste')] class extends Component
                                         </div>
                                     @endif
                                 </flux:table.cell>
+                                <flux:table.cell class="max-w-56 break-words text-sm leading-snug">{{ $entry['group'] ?? '—' }}</flux:table.cell>
                                 <flux:table.cell class="max-w-56 break-words text-sm leading-snug">{{ $entry['department'] ?? '—' }}</flux:table.cell>
                             </flux:table.row>
                         @endforeach

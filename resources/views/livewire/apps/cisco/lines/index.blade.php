@@ -86,6 +86,7 @@ new #[Title('Cisco – Lines')] class extends Component
                 || str_contains(strtolower($line['alerting_name'] ?? ''), $search)
                 || str_contains(strtolower($line['calling_permission'] ?? ''), $search)
                 || str_contains(strtolower($line['calling_search_space'] ?? ''), $search)
+                || str_contains(strtolower($line['group'] ?? ''), $search)
                 || str_contains(strtolower($line['department'] ?? ''), $search);
         }));
     }
@@ -206,6 +207,7 @@ new #[Title('Cisco – Lines')] class extends Component
                 <flux:table.columns>
                     <flux:table.column>Pattern</flux:table.column>
                     <flux:table.column>Beschreibung</flux:table.column>
+                    <flux:table.column>Gruppe</flux:table.column>
                     <flux:table.column>Abteilung</flux:table.column>
                     <flux:table.column>Alerting Name</flux:table.column>
                     <flux:table.column>Usage</flux:table.column>
@@ -218,6 +220,7 @@ new #[Title('Cisco – Lines')] class extends Component
                         <flux:table.row wire:key="line-{{ $line['pattern'] }}">
                             <flux:table.cell>{{ $line['pattern'] }}</flux:table.cell>
                             <flux:table.cell>{{ $line['description'] }}</flux:table.cell>
+                            <flux:table.cell>{{ $line['group'] ?? '—' }}</flux:table.cell>
                             <flux:table.cell>{{ $line['department'] ?? '—' }}</flux:table.cell>
                             <flux:table.cell>{{ $line['alerting_name'] }}</flux:table.cell>
                             <flux:table.cell>{{ $line['usage'] }}</flux:table.cell>
