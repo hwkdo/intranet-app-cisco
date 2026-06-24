@@ -102,7 +102,7 @@ new #[Title('Cisco – Nummernliste')] class extends Component
 ?>
 <div>
 <x-intranet-app-cisco::cisco-layout heading="Cisco App" subheading="Nummernliste">
-    <div class="min-w-0 space-y-6">
+    <div class="space-y-6">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
                 <flux:heading>Nummernliste (100–999)</flux:heading>
@@ -153,36 +153,34 @@ new #[Title('Cisco – Nummernliste')] class extends Component
                 @endif
             </flux:callout>
         @else
-            <div class="min-w-0 overflow-x-auto">
-                <flux:table>
-                    <flux:table.columns>
-                        <flux:table.column class="w-24 shrink-0">Durchwahl</flux:table.column>
-                        <flux:table.column class="min-w-0">Bemerkung</flux:table.column>
-                        <flux:table.column class="w-56 shrink-0">Gruppe</flux:table.column>
-                        <flux:table.column class="w-56 shrink-0">Abteilung</flux:table.column>
-                    </flux:table.columns>
-                    <flux:table.rows>
-                        @foreach($this->filteredEntries as $entry)
-                            <flux:table.row wire:key="extension-{{ $entry['extension'] }}" class="align-top">
-                                <flux:table.cell class="whitespace-nowrap tabular-nums">{{ $entry['extension_display'] }}</flux:table.cell>
-                                <flux:table.cell class="min-w-0 max-w-prose break-words">
-                                    @if($entry['is_free'])
-                                        <flux:badge variant="success" size="sm">FREI</flux:badge>
-                                    @else
-                                        <div class="space-y-1.5 text-sm leading-snug">
-                                            @foreach($entry['remark_lines'] ?? [$entry['remark']] as $remarkLine)
-                                                <div class="break-words">{{ $remarkLine }}</div>
-                                            @endforeach
-                                        </div>
-                                    @endif
-                                </flux:table.cell>
-                                <flux:table.cell class="max-w-56 break-words text-sm leading-snug">{{ $entry['group'] ?? '—' }}</flux:table.cell>
-                                <flux:table.cell class="max-w-56 break-words text-sm leading-snug">{{ $entry['department'] ?? '—' }}</flux:table.cell>
-                            </flux:table.row>
-                        @endforeach
-                    </flux:table.rows>
-                </flux:table>
-            </div>
+            <flux:table>
+                <flux:table.columns>
+                    <flux:table.column>Durchwahl</flux:table.column>
+                    <flux:table.column>Bemerkung</flux:table.column>
+                    <flux:table.column>Gruppe</flux:table.column>
+                    <flux:table.column>Abteilung</flux:table.column>
+                </flux:table.columns>
+                <flux:table.rows>
+                    @foreach($this->filteredEntries as $entry)
+                        <flux:table.row wire:key="extension-{{ $entry['extension'] }}">
+                            <flux:table.cell>{{ $entry['extension_display'] }}</flux:table.cell>
+                            <flux:table.cell>
+                                @if($entry['is_free'])
+                                    <flux:badge variant="success" size="sm">FREI</flux:badge>
+                                @else
+                                    <div class="space-y-1">
+                                        @foreach($entry['remark_lines'] ?? [$entry['remark']] as $remarkLine)
+                                            <div>{{ $remarkLine }}</div>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </flux:table.cell>
+                            <flux:table.cell>{{ $entry['group'] ?? '—' }}</flux:table.cell>
+                            <flux:table.cell>{{ $entry['department'] ?? '—' }}</flux:table.cell>
+                        </flux:table.row>
+                    @endforeach
+                </flux:table.rows>
+            </flux:table>
         @endif
     </div>
 </x-intranet-app-cisco::cisco-layout>
