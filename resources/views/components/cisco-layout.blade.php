@@ -7,9 +7,7 @@
 @php
     $defaultNavItems = [
         ['label' => 'Übersicht', 'href' => route('apps.cisco.index'), 'icon' => 'home', 'description' => 'Zurück zur Übersicht', 'buttonText' => 'Übersicht anzeigen'],
-        ['label' => 'Beispielseite', 'href' => route('apps.cisco.example'), 'icon' => 'document-text', 'description' => 'Beispielseite anzeigen', 'buttonText' => 'Beispielseite öffnen'],
-        ['label' => 'Meine Einstellungen', 'href' => route('apps.cisco.settings.user'), 'icon' => 'cog-6-tooth', 'description' => 'Persönliche Einstellungen anpassen', 'buttonText' => 'Einstellungen öffnen'],
-        ['label' => 'App-Info', 'href' => route('apps.cisco.info'), 'icon' => 'information-circle', 'description' => 'Installierte Version und Release-Historie', 'buttonText' => 'App-Info anzeigen'],
+        ['label' => 'Beispielseite', 'href' => route('apps.cisco.example'), 'icon' => 'document-text', 'description' => 'Beispielseite anzeigen', 'buttonText' => 'Beispielseite öffnen'],        ['label' => 'App-Info', 'href' => route('apps.cisco.info'), 'icon' => 'information-circle', 'description' => 'Installierte Version und Release-Historie', 'buttonText' => 'App-Info anzeigen'],
         ['label' => 'Geräte', 'href' => route('apps.cisco.devices.index'), 'icon' => 'device-phone-mobile', 'description' => 'CUCM-Geräte verwalten', 'buttonText' => 'Geräte öffnen', 'permission' => 'manage-app-cisco'],
         ['label' => 'Lines', 'href' => route('apps.cisco.lines.index'), 'icon' => 'hashtag', 'description' => 'Telefonnummern (Lines) verwalten', 'buttonText' => 'Lines öffnen', 'permission' => 'manage-app-cisco'],
         ['label' => 'Nummernliste', 'href' => route('apps.cisco.number-list.index'), 'icon' => 'list-bullet', 'description' => 'Übersicht aller Durchwahlen 100–999', 'buttonText' => 'Nummernliste öffnen', 'permission' => 'manage-app-cisco'],

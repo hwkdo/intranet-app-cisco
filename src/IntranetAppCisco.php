@@ -33,7 +33,7 @@ class IntranetAppCisco implements IntranetAppInterface
     
     public static function userSettingsClass(): ?string
     {
-        return \Hwkdo\IntranetAppCisco\Data\UserSettings::class;
+        return null;
     }
     
     public static function appSettingsClass(): ?string
