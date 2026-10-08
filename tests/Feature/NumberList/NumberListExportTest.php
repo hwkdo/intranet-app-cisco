@@ -50,7 +50,9 @@ test('number list can export entire directory to excel', function () {
         ->test('intranet-app-cisco::apps.cisco.number-list.index')
         ->call('exportExcelAll');
 
-    Excel::assertDownloaded('nummernliste-alle-*.xlsx', function (ExtensionDirectoryExport $export): bool {
+    Excel::matchByRegex();
+
+    Excel::assertDownloaded('/^nummernliste-alle-\d{4}-\d{2}-\d{2}-\d{6}\.xlsx$/', function (ExtensionDirectoryExport $export): bool {
         return $export->collection()->count() === 900
             && $export->headings() === ['Durchwahl', 'Bemerkung', 'Gruppe', 'Abteilung'];
     });
@@ -69,7 +71,9 @@ test('number list can export filtered directory to excel', function () {
         ->set('showOnlyFree', true)
         ->call('exportExcelFiltered');
 
-    Excel::assertDownloaded('nummernliste-gefiltert-*.xlsx', function (ExtensionDirectoryExport $export): bool {
+    Excel::matchByRegex();
+
+    Excel::assertDownloaded('/^nummernliste-gefiltert-\d{4}-\d{2}-\d{2}-\d{6}\.xlsx$/', function (ExtensionDirectoryExport $export): bool {
         return $export->collection()->every(fn (array $entry): bool => $entry['is_free']);
     });
 });

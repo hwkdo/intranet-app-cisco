@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hwkdo\IntranetAppCisco\Models;
 
+use Hwkdo\IntranetAppCisco\Database\Factories\CiscoExtensionReservationFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,11 @@ class CiscoExtensionReservation extends Model
 {
     /** @use HasFactory<\Hwkdo\IntranetAppCisco\Database\Factories\CiscoExtensionReservationFactory> */
     use HasFactory;
+
+    protected static function newFactory(): CiscoExtensionReservationFactory
+    {
+        return CiscoExtensionReservationFactory::new();
+    }
 
     protected $fillable = [
         'extension_from',

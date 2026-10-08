@@ -56,7 +56,9 @@ test('devices page can export entire list to excel', function () {
         ->test('intranet-app-cisco::apps.cisco.devices.index')
         ->call('exportExcelAll');
 
-    Excel::assertDownloaded('geraete-alle-*.xlsx', function (PhysicalDeviceExport $export): bool {
+    Excel::matchByRegex();
+
+    Excel::assertDownloaded('/^geraete-alle-\d{4}-\d{2}-\d{2}-\d{6}\.xlsx$/', function (PhysicalDeviceExport $export): bool {
         $row = $export->collection()->first();
 
         return $export->headings() === [
@@ -112,7 +114,9 @@ test('devices page can export filtered list to excel', function () {
         ->set('onlyPhysicalDevices', true)
         ->call('exportExcelFiltered');
 
-    Excel::assertDownloaded('geraete-gefiltert-*.xlsx', function (PhysicalDeviceExport $export): bool {
+    Excel::matchByRegex();
+
+    Excel::assertDownloaded('/^geraete-gefiltert-\d{4}-\d{2}-\d{2}-\d{6}\.xlsx$/', function (PhysicalDeviceExport $export): bool {
         return $export->collection()->count() === 1
             && $export->collection()->first()['name'] === 'SEP001122334455';
     });

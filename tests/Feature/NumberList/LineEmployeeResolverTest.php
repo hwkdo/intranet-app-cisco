@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 use App\Models\Gvp;
 use App\Models\User;
+use Hwkdo\CiscoPhoneServicesLaravel\Interfaces\AxlServiceInterface;
 use Hwkdo\IntranetAppCisco\Services\ExtensionDirectoryBuilder;
 use Hwkdo\IntranetAppCisco\Services\LineEmployeeResolver;
+
+use function Pest\Laravel\mock;
 
 test('line employee resolver assigns group and parent department for gruppe users', function () {
     $abteilung = Gvp::factory()->create([
@@ -158,7 +161,9 @@ test('extension directory builder adds department for resolved line users', func
         'gvp_id' => $gvp->id,
     ]);
 
-    mock(\Hwkdo\CiscoPhoneServicesLaravel\Interfaces\AxlServiceInterface::class)
+    config()->set('cisco-phone-services-laravel.axl.pattern', '\+492315493');
+
+    mock(AxlServiceInterface::class)
         ->shouldReceive('listLines')
         ->andReturn([
             [
