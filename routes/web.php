@@ -3,16 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-
-Route::middleware(['web','auth','can:see-app-cisco'])->group(function () {        
+Route::middleware(['web', 'auth', 'can:see-app-cisco'])->group(function () {
     Volt::route('apps/cisco', 'apps.cisco.index')->name('apps.cisco.index');
 
     Volt::route('apps/cisco/example', 'apps.cisco.example')->name('apps.cisco.example');
     Volt::route('apps/cisco/info', 'apps.cisco.info')->name('apps.cisco.info');
 });
 
-
-Route::middleware(['web','auth','can:manage-app-cisco'])->group(function () {
+Route::middleware(['web', 'auth', 'can:manage-app-cisco'])->group(function () {
     Volt::route('apps/cisco/admin', 'apps.cisco.admin.index')->name('apps.cisco.admin.index');
 
     Volt::route('apps/cisco/pickup-groups', 'apps.cisco.pickup-groups.index')->name('apps.cisco.pickup-groups.index');
@@ -22,7 +20,6 @@ Route::middleware(['web','auth','can:manage-app-cisco'])->group(function () {
     Volt::route('apps/cisco/hunt-lists/{identifier}', 'apps.cisco.hunt-lists.show')->name('apps.cisco.hunt-lists.show');
 
     Volt::route('apps/cisco/line-groups/{identifier}', 'apps.cisco.line-groups.show')->name('apps.cisco.line-groups.show');
-
 
     Route::livewire('apps/cisco/devices', 'intranet-app-cisco::apps.cisco.devices.index')->name('apps.cisco.devices.index');
 
